@@ -1,0 +1,21 @@
+1. Seleccionar EC2
+2. Crear instancia EC2, dejar norte de virginia como región
+3. Seleccionar ubuntu free 16.04
+	colocar 20 gb de almacenamiento
+	crear los puertos:
+		HTTP 80
+		TCP  1883 (MQTT)
+		TCP  9001
+4. Crear las llaves de acceso y descargarlas
+5. Asignar IP elástica y asociarla a la instancia
+6. Abrir el generador de contraseñas de putty, importar la llave y guardar la llave privada
+7. Abrir putty, en la sección auth seleccionar la llave creada anteriormente; luego en Data colocar    el nombre "ubuntu", guadar la sesión y abrirla
+8. actualizar el sistema "apt-get update"
+9. Instalar mosquitto y mosquitto-clients
+10. Ejemplo: mosquitto_sub -h localhost -t "topic/iot"
+	     mosquitto_pub -h localhost -t "topic/iot" -m "hola mundo"
+11. Instalar websocket -> crear archivo de configuración websockets.conf en la direccion       /etc/mosquitto/conf.d, listener 1883 protocol mqtt; listener 9001 protocol websockets,
+    reiniciar los servicios de mosquitto sudo systemctl restart mosquitto
+12. Instalar apache2, verificar si git está instalado.
+13. Instalar hivemq -> sudo git clone https://github.com/hivemq/hivemq-mqtt-web-client.git mqtt-web
+    sudo chown www-data:www-data -R mqtt-web	
