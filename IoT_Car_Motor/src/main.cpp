@@ -15,7 +15,7 @@
 //Parámetros de la red wifi local, dirección y puerto del servidor mqtt remoto
 const char* ssid        = "RED_JHL_FLIA_TRUJILLO";
 const char* password    = "Trullo@*2746#";
-const char* mqtt_server = "54.204.32.210";
+const char* mqtt_server = "54.204.32.210"; //IP elástica
 const int   mqttPort    = 1883;
 
 //Configuración librría wifi y PubSubClient
@@ -108,30 +108,49 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.print((char)payload[i]);
   }
   Serial.println();
-
-  char op = (char)payload[0];
-  switch (op)
+  if (String(topic) == "iot/car/motor")
   {
-    case '1':
-      digitalWrite(MA1, HIGH);
-      digitalWrite(MA2, LOW);
-      digitalWrite(MB1, LOW);
-      digitalWrite(MB2, HIGH);
-      digitalWrite(MCD1, HIGH);
-      digitalWrite(MCD2, LOW);
+    char op = (char)payload[0];
+    switch (op)
+    {
+      case '1':
+        digitalWrite(MA1, HIGH);
+        digitalWrite(MA2, LOW);
+        digitalWrite(MB1, LOW);
+        digitalWrite(MB2, HIGH);
+        digitalWrite(MCD1, HIGH);
+        digitalWrite(MCD2, LOW);
+        break;
+      case '2':
+        digitalWrite(MA1, LOW);
+        digitalWrite(MA2, HIGH);
+        digitalWrite(MB1, HIGH);
+        digitalWrite(MB2, LOW);
+        digitalWrite(MCD1, LOW);
+        digitalWrite(MCD2, HIGH);
+        break;
+      case '3':
+        digitalWrite(MA1, LOW);
+        digitalWrite(MA2, HIGH);
+        digitalWrite(MB1, HIGH);
+        digitalWrite(MB2, LOW);
+        digitalWrite(MCD1, HIGH);
+        digitalWrite(MCD2, LOW);
+        break;
+      case '4':
+        digitalWrite(MA1, HIGH);
+        digitalWrite(MA2, LOW);
+        digitalWrite(MB1, LOW);
+        digitalWrite(MB2, HIGH);
+        digitalWrite(MCD1, LOW);
+        digitalWrite(MCD2, HIGH);
       break;
-    case '2':
-      digitalWrite(MA1, LOW);
-      digitalWrite(MA2, HIGH);
-      digitalWrite(MB1, HIGH);
-      digitalWrite(MB2, LOW);
-      digitalWrite(MCD1, LOW);
-      digitalWrite(MCD2, HIGH);
-      break;
-    default:
-      Stop();
-      break;
+      default:
+        Stop();
+        break;
+    }
   }
+  
 }
 
 //Reconexión wifi
@@ -146,9 +165,11 @@ void reconnect(void) {
     if (client.connect(clientId.c_str())) {
       Serial.println("Conectado");
       // Once connected, publish an announcement...
-      client.publish("IoT/car/motor", "Motor conectado");
+      //client.publish("iot/car/motor", "Motor conectado");
       // ... and resubscribe
-      client.subscribe("IoT/car/motor");
+      client.subscribe("iot/car/motor");
+      //client.subscribe("iot/car/rpm");
+      //client.subscribe("iot/car/moq135");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
