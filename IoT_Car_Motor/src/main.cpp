@@ -3,14 +3,16 @@
 #include <PubSubClient.h>
 
 //Asignación de pines y tamaños de buffer
-#define MA1     14
-#define MA2     27
-#define MB1     26
-#define MB2     25
-#define MCD1    33
-#define MCD2    32
+#define MA1                 14
+#define MA2                 27
+#define MB1                 26
+#define MB2                 25
+#define MCD1                33
+#define MCD2                32
 #define MSG_BUFFER_SIZE	(50)
-#define pin_RPM 13
+#define MSG_BUFFER_AIRE	(10)
+#define pin_RPM             13
+#define pin_Caire           34
 
 //Parámetros de la red wifi local, dirección y puerto del servidor mqtt remoto
 const char* ssid        = "RED_JHL_FLIA_TRUJILLO";
@@ -25,9 +27,12 @@ PubSubClient client(espClient);
 //Variables globales
 unsigned long       lastMsg       = 0;
 char                msg[MSG_BUFFER_SIZE];
+char                msg_a[MSG_BUFFER_AIRE];
 int                 rpm           = 0;
 volatile byte       pulsos        = 0;
 const unsigned int  pulsos_vuelta = 20; // Número de orificios en el encoder
+int                 c_aire        = 0;
+volatile boolean    act           = false;
 
 //Prototipos de funciones
 void setup_wifi(void);
@@ -64,10 +69,16 @@ void loop() {
     rpm     = (60 * 1000 / pulsos_vuelta ) / (millis() - lastMsg) * pulsos;
     lastMsg = millis();
     pulsos  = 0;
-    snprintf (msg, MSG_BUFFER_SIZE, "RPM: %i", rpm);
+    snprintf (msg, MSG_BUFFER_SIZE, "%i", rpm);
     Serial.print("Publish message: ");
     Serial.println(msg);
     client.publish("iot/car/rpm", msg);
+    //Calidad aire
+    c_aire = analogRead(pin_Caire);
+    snprintf(msg_a, MSG_BUFFER_AIRE, "%i", c_aire);
+    Serial.print("Publish message: ");
+    Serial.println(msg_a);
+    client.publish("iot/car/mq135", msg_a);
     attachInterrupt(pin_RPM, isr, RISING);
   }
 }
@@ -108,50 +119,65 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.print((char)payload[i]);
   }
   Serial.println();
-  if (String(topic) == "iot/car/motor")
+
+  if (String(topic) == "iot/car")
   {
-    char op = (char)payload[0];
-    switch (op)
+    if ((char)payload[0] == '5')
     {
-      case '1':
-        digitalWrite(MA1, HIGH);
-        digitalWrite(MA2, LOW);
-        digitalWrite(MB1, LOW);
-        digitalWrite(MB2, HIGH);
-        digitalWrite(MCD1, HIGH);
-        digitalWrite(MCD2, LOW);
-        break;
-      case '2':
-        digitalWrite(MA1, LOW);
-        digitalWrite(MA2, HIGH);
-        digitalWrite(MB1, HIGH);
-        digitalWrite(MB2, LOW);
-        digitalWrite(MCD1, LOW);
-        digitalWrite(MCD2, HIGH);
-        break;
-      case '3':
-        digitalWrite(MA1, LOW);
-        digitalWrite(MA2, HIGH);
-        digitalWrite(MB1, HIGH);
-        digitalWrite(MB2, LOW);
-        digitalWrite(MCD1, HIGH);
-        digitalWrite(MCD2, LOW);
-        break;
-      case '4':
-        digitalWrite(MA1, HIGH);
-        digitalWrite(MA2, LOW);
-        digitalWrite(MB1, LOW);
-        digitalWrite(MB2, HIGH);
-        digitalWrite(MCD1, LOW);
-        digitalWrite(MCD2, HIGH);
-      break;
-      default:
-        Stop();
-        break;
+      act = true;
+    }
+
+    if ((char)payload[0] == '6')
+    {
+      act = false;
     }
   }
   
-}
+  if (act)
+  {
+    if (String(topic) == "iot/car/motor") {
+      char op = (char)payload[0];
+      switch (op)
+      {
+        case '1':
+          digitalWrite(MA1, HIGH);
+          digitalWrite(MA2, LOW);
+          digitalWrite(MB1, LOW);
+          digitalWrite(MB2, HIGH);
+          digitalWrite(MCD1, HIGH);
+          digitalWrite(MCD2, LOW);
+          break;
+        case '2':
+          digitalWrite(MA1, LOW);
+          digitalWrite(MA2, HIGH);
+          digitalWrite(MB1, HIGH);
+          digitalWrite(MB2, LOW);
+          digitalWrite(MCD1, LOW);
+          digitalWrite(MCD2, HIGH);
+          break;
+        case '3':
+          digitalWrite(MA1, LOW);
+          digitalWrite(MA2, HIGH);
+          digitalWrite(MB1, HIGH);
+          digitalWrite(MB2, LOW);
+          digitalWrite(MCD1, HIGH);
+          digitalWrite(MCD2, LOW);
+          break;
+        case '4':
+          digitalWrite(MA1, HIGH);
+          digitalWrite(MA2, LOW);
+          digitalWrite(MB1, LOW);
+          digitalWrite(MB2, HIGH);
+          digitalWrite(MCD1, LOW);
+          digitalWrite(MCD2, HIGH);
+        break;
+        default:
+          Stop();
+          break;
+      }
+    }
+  }
+}  
 
 //Reconexión wifi
 void reconnect(void) {
@@ -168,6 +194,7 @@ void reconnect(void) {
       //client.publish("iot/car/motor", "Motor conectado");
       // ... and resubscribe
       client.subscribe("iot/car/motor");
+      client.subscribe("iot/car");
       //client.subscribe("iot/car/rpm");
       //client.subscribe("iot/car/moq135");
     } else {

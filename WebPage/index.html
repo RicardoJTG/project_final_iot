@@ -44,6 +44,9 @@
                         <button onmousedown="atras()" onmouseup="detener()">Atras</button>
                         <button onmousedown="izquierda()" onmouseup="detener()">Izquierda</button>
                         <button onmousedown="derecha()" onmouseup="detener()">Derecha</button>
+                        <button onmousedown="desactivar()">Desactivar</button>
+                        <h6>Estado del carro:</h6>
+                        <h6 id="act"></h6>
                     </div>
                 </div>
             </div>
@@ -57,11 +60,21 @@
                 </div>
             </div>
 
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Temperatura Sala</h5>
+                        <canvas id="grafica_temp"></canvas>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script src="js/iot-mqtt.js"></script>
     <script src="js/grafica_rpm.js"></script>
     <script src="js/grafica-aire.js"></script>
+    <script src="js/grafica_temp.js"></script>
 </body>
 </html>

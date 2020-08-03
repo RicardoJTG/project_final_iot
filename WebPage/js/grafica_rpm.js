@@ -14,7 +14,7 @@ am4core.ready(function() {
     
     var axis = chart.xAxes.push(new am4charts.ValueAxis());
     axis.min = 0;
-    axis.max = 200;
+    axis.max = 1000;
     axis.strictMinMax = true;
     axis.renderer.radius = am4core.percent(80);
     axis.renderer.inside = true;
@@ -36,7 +36,7 @@ am4core.ready(function() {
     
     var axis2 = chart.xAxes.push(new am4charts.ValueAxis());
     axis2.min = 0;
-    axis2.max = 200;
+    axis2.max = 1000;
     axis2.strictMinMax = true;
     axis2.renderer.labels.template.disabled = true;
     axis2.renderer.ticks.template.disabled = true;
@@ -44,13 +44,13 @@ am4core.ready(function() {
     
     var range0 = axis2.axisRanges.create();
     range0.value = 0;
-    range0.endValue = 200;
+    range0.endValue = 1000;
     range0.axisFill.fillOpacity = 1;
     range0.axisFill.fill = colorSet.getIndex(0);
     
     var range1 = axis2.axisRanges.create();
     range1.value = 0;
-    range1.endValue = 200;
+    range1.endValue = 1000;
     range1.axisFill.fillOpacity = 1;
     range1.axisFill.fill = colorSet.getIndex(2);
     
@@ -93,6 +93,6 @@ am4core.ready(function() {
         property: "value",
         to: value
       }, 1000, am4core.ease.cubicOut).start();
-    }, 1000);
+    }, 100);
     
     }); // end am4core.ready()

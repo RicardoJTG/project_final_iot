@@ -1,4 +1,4 @@
-function datos(){
+function datos_t(){
     var datos = [],
     tiempo = (new Date()).getTime(), i;
     for( i = -10; i <= 0; i += 1){
@@ -10,17 +10,17 @@ function datos(){
     return datos;
 }
 
-var config = {
+var config_t = {
     // The type of chart we want to create
     type: 'line',
 
     // The data for our dataset
     data: {
         datasets: [{
-            label: 'Calidad del aire',
-            backgroundColor: 'rgb(27, 255, 0)',
-            borderColor: 'rgb(27, 255, 0)',
-            data: datos(0),
+            label: 'Temperatura Sala',
+            backgroundColor: 'rgb(255, 0, 0)',
+            borderColor: 'rgb(255, 0, 0)',
+            data: datos_t(0),
             fill: false
         }]
     },
@@ -29,7 +29,7 @@ var config = {
     options: {
         title: {
             display: true,
-            text: 'Calidad del aire en tiempo real'
+            text: 'Temperatura en tiempo real'
         },
         scales : {
             xAxes: [{
@@ -41,23 +41,23 @@ var config = {
                     beginAtzero: true,
                     steps: 10,
                     stepValue: 5,
-                    max: 6000
+                    max: 100
                 }
             }]
         }
     }
 }
 
-var ctx = document.getElementById('grafica_ca').getContext('2d');
-var grafica_ca = new Chart(ctx,config);
+var ctx_t = document.getElementById('grafica_temp').getContext('2d');
+var grafica_temp = new Chart(ctx_t,config_t);
 
 function update() {        
     var time = (new Date()).getTime();
-    config.data.datasets.forEach(function(dataset) {
+    config_t.data.datasets.forEach(function(dataset) {
         dataset.data.shift();
-        dataset.data.push({x: time ,y: calidad_air});
+        dataset.data.push({x: time ,y: temp_hall});
     });
-    grafica_ca.update();
+    grafica_temp.update();
 }
 
-setInterval(update, 999);
+setInterval(update, 1000);
