@@ -15,9 +15,9 @@
 #define pin_Caire           34
 
 //Parámetros de la red wifi local, dirección y puerto del servidor mqtt remoto
-const char* ssid        = "RED_JHL_FLIA_TRUJILLO";
-const char* password    = "Trullo@*2746#";
-const char* mqtt_server = "54.204.32.210"; //IP elástica
+const char* ssid        = "RED_WIFI";
+const char* password    = "PASS_WIFI";
+const char* mqtt_server = "IP_BROKER_MQTT"; //IP elástica
 const int   mqttPort    = 1883;
 
 //Configuración librría wifi y PubSubClient
